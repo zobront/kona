@@ -530,7 +530,7 @@ where
                 let mut merged = HashMap::<B256, Bytes>::new();
                 merged.extend(execute_payload_response.state);
                 merged.extend(execute_payload_response.codes);
-                merged.extend(execute_payload_response.keys);
+                merged.extend(execute_payload_response.keys.unwrap());
 
                 let mut kv_write_lock = self.kv_store.write().await;
                 for (hash, preimage) in merged.into_iter() {

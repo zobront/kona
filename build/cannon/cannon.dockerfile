@@ -22,7 +22,7 @@ RUN apt-get update && apt-get install --assume-yes --no-install-recommends \
   clang \
   make \
   cmake \
-  git 
+  git
 
 # Install Rustup and Rust
 RUN curl https://sh.rustup.rs -sSf | bash -s -- -y --default-toolchain ${RUST_VERSION} --component rust-src

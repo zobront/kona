@@ -102,7 +102,7 @@ brotli = { version = "7.0.0", default-features = false }
 # Testing
 proptest = "1.5"
 criterion = { version = "0.5.1", features = ["html_reports"] }
-pprof = { version = "0.13.0", features = ["criterion", "flamegraph", "frame-pointer"] } 
+pprof = { version = "0.13.0", features = ["criterion", "flamegraph", "frame-pointer"] }
 
 # Serialization
 rkyv = "0.8.8"
@@ -127,7 +127,7 @@ alloy-provider = { version = "0.4.2", default-features = false }
 alloy-primitives = { version = "0.8", default-features = false }
 alloy-consensus = { version = "0.4.2", default-features = false }
 alloy-transport = { version = "0.4.2", default-features = false }
-alloy-rpc-types = { version = "0.4.2", default-features = false }
+alloy-rpc-types = { version = "0.4.2", default-features = false, features = ["debug"] }
 alloy-rpc-client = { version = "0.4.2", default-features = false }
 alloy-rpc-types-engine = { version = "0.4.2", default-features = false }
 alloy-node-bindings = { version = "0.4.2", default-features = false }

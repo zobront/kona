@@ -25,12 +25,13 @@ alloy-eips.workspace = true
 alloy-consensus.workspace = true
 alloy-rlp.workspace = true
 alloy-provider.workspace = true
-alloy-transport-http.workspace = true 
-alloy-rpc-client.workspace = true 
+alloy-transport-http.workspace = true
+alloy-rpc-client.workspace = true
 alloy-rpc-types = { workspace = true, features = ["eth"] }
 alloy-primitives = { workspace = true, features = ["serde"] }
 op-alloy-genesis = { workspace = true, features = ["std", "serde"] }
 op-alloy-protocol = { workspace = true, features = ["std", "serde"] }
+op-alloy-rpc-types-engine.workspace = true
 revm = { workspace = true, features = ["std", "c-kzg", "secp256k1", "portable", "blst"] }
 
 # General

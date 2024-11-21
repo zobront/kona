@@ -16,6 +16,7 @@ use kona_preimage::{PreimageKey, PreimageKeyType};
 use kona_primitives::IndexedBlobHash;
 use kona_providers_alloy::{OnlineBeaconClient, OnlineBlobProvider};
 use op_alloy_protocol::BlockInfo;
+use op_alloy_rpc_types_engine::OpPayloadAttributes;
 use std::sync::Arc;
 use tokio::sync::RwLock;
 use tracing::trace;
@@ -514,22 +515,22 @@ where
                     anyhow::bail!("Invalid hint data length: {}", hint_data.len());
                 }
                 let parent_block_hash = B256::from_slice(&hint_data.as_ref()[..32]);
-                let payload_attributes = hint_data[32..].to_vec();
+                let payload_attributes: OpPayloadAttributes = serde_json::from_slice(&hint_data[32..])?;
 
                 let execute_payload_response: ExecutionWitness = self
                     .l2_provider
                     .client()
-                    .request::<(B256, Vec<u8>), ExecutionWitness>(
+                    .request::<(B256, OpPayloadAttributes), ExecutionWitness>(
                         "debug_executePayload",
                         (parent_block_hash, payload_attributes),
                     )
                     .await
                     .map_err(|e| anyhow!("Failed to fetch preimage: {e}"))?;
 
-                // TODO: validate what happens if multiple of the same key
                 let mut merged = HashMap::<B256, Bytes>::new();
                 merged.extend(execute_payload_response.state);
                 merged.extend(execute_payload_response.codes);
+                // Note: This `unwrap()` will need to be removed when `alloy-rpc-types-debug` upgrades to `0.6.*`.
                 merged.extend(execute_payload_response.keys.unwrap());
 
                 let mut kv_write_lock = self.kv_store.write().await;

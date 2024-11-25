@@ -6,6 +6,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.1](https://github.com/zobront/kona/compare/kona-executor-v0.1.0...kona-executor-v0.1.1) - 2024-11-25
+
+### Other
+
+- update Cargo.toml dependencies
+
 ## [0.0.6](https://github.com/anton-rs/kona/compare/kona-executor-v0.0.5...kona-executor-v0.0.6) - 2024-11-20
 
 ### Added

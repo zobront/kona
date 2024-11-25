@@ -6,6 +6,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.0](https://github.com/zobront/kona/compare/kona-proof-v0.1.0...kona-proof-v0.2.0) - 2024-11-25
+
+### Other
+
+- L2ExecutePayloadProof Hint Type ([#832](https://github.com/zobront/kona/pull/832))
+
 ## [0.0.1](https://github.com/anton-rs/kona/releases/tag/kona-proof-v0.0.1) - 2024-11-20
 
 ### Added

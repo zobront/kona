@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.1](https://github.com/zobront/kona/compare/kona-driver-v0.1.0...kona-driver-v0.1.1) - 2024-11-25
+
+### Other
+
+- *(driver)* visibility ([#834](https://github.com/zobront/kona/pull/834))
+
 ## [0.0.1](https://github.com/anton-rs/kona/compare/kona-driver-v0.0.0...kona-driver-v0.0.1) - 2024-11-20
 
 ### Added

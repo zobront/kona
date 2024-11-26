@@ -34,6 +34,7 @@ op-alloy-genesis = { workspace = true, features = ["serde"] }
 
 # Revm
 revm.workspace = true
+reth-optimism-chainspec.workspace = true
 
 # General
 lru.workspace = true

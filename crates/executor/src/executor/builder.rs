@@ -1,6 +1,6 @@
 //! Contains the builder pattern for the [StatelessL2BlockExecutor].
 
-use super::{KonaEvmConfig, StatelessL2BlockExecutor};
+use super::{evm_config::DefaultEvmConfig, KonaEvmConfig, StatelessL2BlockExecutor};
 use crate::db::{TrieDB, TrieDBProvider};
 use alloc::sync::Arc;
 use alloy_consensus::{Header, Sealable, Sealed};
@@ -12,12 +12,6 @@ use revm::{db::State, handler::register::EvmHandler};
 /// A type alias for the [revm::handler::register::HandleRegister] for kona's block executor.
 pub type KonaHandleRegister<F, H> =
     for<'i> fn(&mut EvmHandler<'i, (), &mut State<&mut TrieDB<F, H>>>);
-
-#[derive(Debug)]
-enum EvmConfigOrChainSpec<C: KonaEvmConfig> {
-    EvmConfig(C),
-    ChainSpec(Arc<OpChainSpec>),
-}
 
 /// The builder pattern for the [StatelessL2BlockExecutor].
 #[derive(Debug)]
@@ -36,7 +30,7 @@ where
     /// The parent [Header] to begin execution from.
     parent_header: Option<Sealed<Header>>,
     /// The [KonaEvmConfig] or chainspec used to derive it.
-    evm_config: Option<EvmConfigOrChainSpec<C>>,
+    evm_config: Option<C>,
     /// The [KonaHandleRegister] to use during execution.
     handler_register: Option<KonaHandleRegister<F, H>>,
 }
@@ -71,15 +65,16 @@ where
         self
     }
 
-    /// Set the [KonaHandleRegister] for execution.
+    /// Set the [KonaEvmConfig] for execution.
     pub fn with_evm_config(mut self, evm_config: C) -> Self {
-        self.evm_config = Some(EvmConfigOrChainSpec::EvmConfig(evm_config));
+        self.evm_config = Some(evm_config);
         self
     }
 
-    /// Set the [KonaHandleRegister] for execution.
+    /// Set the [KonaEvmConfig] for execution using a chain spec.
     pub fn with_chain_spec(mut self, chain_spec: Arc<OpChainSpec>) -> Self {
-        self.evm_config = Some(EvmConfigOrChainSpec::ChainSpec(chain_spec));
+        // ZTODO: Is there a way to force this to be a DefaultEvmConfig?
+        self.evm_config = Some(C::new(chain_spec));
         self
     }
 
@@ -91,10 +86,7 @@ where
         });
 
         // ZTODO: error handling
-        let evm_config = match self.evm_config.unwrap() {
-            EvmConfigOrChainSpec::EvmConfig(config) => config,
-            EvmConfigOrChainSpec::ChainSpec(chain_spec) => C::new(chain_spec),
-        };
+        let evm_config = self.evm_config.unwrap();
 
         let trie_db =
             TrieDB::new(parent_header.state_root, parent_header, self.provider, self.hinter);

@@ -1,10 +1,10 @@
 //! A stateless block executor for the OP Stack.
 
 use crate::{
-    constants::{L2_TO_L1_BRIDGE, OUTPUT_ROOT_VERSION, FEE_RECIPIENT},
+    constants::{FEE_RECIPIENT, L2_TO_L1_BRIDGE, OUTPUT_ROOT_VERSION},
     db::TrieDB,
     errors::TrieDBError,
-    syscalls::{ensure_create2_deployer_canyon, apply_beacon_root_contract_call},
+    syscalls::{apply_beacon_root_contract_call, ensure_create2_deployer_canyon},
     ExecutorError, ExecutorResult, TrieDBProvider,
 };
 use alloc::vec::Vec;
@@ -91,10 +91,13 @@ where
         };
 
         // TODO: error handling
-        let (initialized_cfg, initialized_block_env) =
-            self.evm_config.next_cfg_and_block_env(
-                &C::localize_alloy_header(&self.trie_db.parent_block_header()), next_block_env_attrs
-            ).unwrap();
+        let (initialized_cfg, initialized_block_env) = self
+            .evm_config
+            .next_cfg_and_block_env(
+                &C::localize_alloy_header(&self.trie_db.parent_block_header()),
+                next_block_env_attrs,
+            )
+            .unwrap();
 
         let block_number = initialized_block_env.number.to::<u64>();
         let base_fee = initialized_block_env.basefee.to::<u128>();
@@ -113,7 +116,6 @@ where
         let mut state =
             State::builder().with_database(&mut self.trie_db).with_bundle_update().build();
 
-
         // ZTODO: Confirm ok to change this order
         // Ensure that the create2 contract is deployed upon transition to the Canyon hardfork.
         ensure_create2_deployer_canyon(
@@ -131,7 +133,8 @@ where
                 Default::default(),
             );
 
-            let mut base = Evm::builder().with_db(&mut state).with_env_with_handler_cfg(env_with_handler_cfg);
+            let mut base =
+                Evm::builder().with_db(&mut state).with_env_with_handler_cfg(env_with_handler_cfg);
 
             if let Some(handler) = self.handler_register {
                 base = base.append_handler_register(handler);
@@ -139,7 +142,6 @@ where
 
             base.build()
         };
-        // let evm = self.evm_config.evm_with_env(self.trie_db, env_with_handler_cfg);
 
         // Apply the pre-block EIP-4788 contract call.
         apply_beacon_root_contract_call(
@@ -148,7 +150,7 @@ where
             payload.payload_attributes.timestamp,
             block_number,
             payload.payload_attributes.parent_beacon_block_root,
-            &mut evm
+            &mut evm,
         )?;
 
         let mut cumulative_gas_used = 0u64;

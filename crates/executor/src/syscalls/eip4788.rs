@@ -11,10 +11,7 @@ use alloy_eips::eip4788::BEACON_ROOTS_ADDRESS;
 use alloy_primitives::B256;
 use kona_mpt::TrieHinter;
 use op_alloy_genesis::RollupConfig;
-use revm::{
-    db::State,
-    DatabaseCommit, Evm,
-};
+use revm::{db::State, DatabaseCommit, Evm};
 
 /// Apply the EIP-4788 pre-block beacon root contract call to a given EVM instance.
 pub(crate) fn apply_beacon_root_contract_call<F, H, C: KonaEvmConfig>(

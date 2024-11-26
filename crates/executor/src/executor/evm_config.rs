@@ -1,16 +1,16 @@
+use alloc::{sync::Arc, vec::Vec};
+use alloy_consensus::{Header as AlloyHeader, Sealed};
+use alloy_primitives::{Address, Bytes, TxKind, U256};
 use reth_evm::{ConfigureEvmEnv, NextBlockEnvAttributes};
+use reth_optimism_chainspec::{DecodeError, OpChainSpec};
+use reth_optimism_forks::OpHardfork;
 use reth_primitives::TransactionSigned;
 use reth_primitives_traits::FillTxEnv;
-use reth_optimism_chainspec::{OpChainSpec, DecodeError};
-use reth_optimism_forks::OpHardfork;
-use alloy_consensus::{Sealed, Header as AlloyHeader};
-use alloy_primitives::{U256, Address, Bytes, TxKind};
-use alloc::{sync::Arc, vec::Vec};
-use revm_primitives::{
-    CfgEnv, BlobExcessGasAndPrice, TxEnv, SpecId, HandlerCfg,
-    BlockEnv, AnalysisKind, CfgEnvWithHandlerCfg
-};
 use revm::primitives::{Env, OptimismFields};
+use revm_primitives::{
+    AnalysisKind, BlobExcessGasAndPrice, BlockEnv, CfgEnv, CfgEnvWithHandlerCfg, HandlerCfg,
+    SpecId, TxEnv,
+};
 
 /// Trait for configuring the EVM for custom execution.
 pub trait KonaEvmConfig: ConfigureEvmEnv {
@@ -20,7 +20,6 @@ pub trait KonaEvmConfig: ConfigureEvmEnv {
     /// Localize a Sealed Alloy Header into the local Header type.
     fn localize_alloy_header(header: &Sealed<AlloyHeader>) -> Self::Header;
 }
-
 
 #[derive(Clone, Debug)]
 pub struct DefaultEvmConfig {
@@ -32,7 +31,9 @@ impl KonaEvmConfig for DefaultEvmConfig {
         Self { chain_spec }
     }
 
-    fn localize_alloy_header(header: &Sealed<AlloyHeader>) -> <DefaultEvmConfig as ConfigureEvmEnv>::Header {
+    fn localize_alloy_header(
+        header: &Sealed<AlloyHeader>,
+    ) -> <DefaultEvmConfig as ConfigureEvmEnv>::Header {
         header.inner().clone()
     }
 }
@@ -160,11 +161,7 @@ impl ConfigureEvmEnv for DefaultEvmConfig {
     }
 }
 
-
-fn revm_spec_by_timestamp_after_bedrock(
-    chain_spec: &OpChainSpec,
-    timestamp: u64,
-) -> SpecId {
+fn revm_spec_by_timestamp_after_bedrock(chain_spec: &OpChainSpec, timestamp: u64) -> SpecId {
     if chain_spec.fork(OpHardfork::Holocene).active_at_timestamp(timestamp) {
         revm_primitives::HOLOCENE
     } else if chain_spec.fork(OpHardfork::Granite).active_at_timestamp(timestamp) {

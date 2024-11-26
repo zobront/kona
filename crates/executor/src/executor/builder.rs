@@ -1,12 +1,12 @@
 //! Contains the builder pattern for the [StatelessL2BlockExecutor].
 
-use super::{StatelessL2BlockExecutor, KonaEvmConfig};
+use super::{KonaEvmConfig, StatelessL2BlockExecutor};
 use crate::db::{TrieDB, TrieDBProvider};
+use alloc::sync::Arc;
 use alloy_consensus::{Header, Sealable, Sealed};
 use kona_mpt::TrieHinter;
 use op_alloy_genesis::RollupConfig;
 use reth_optimism_chainspec::OpChainSpec;
-use alloc::sync::Arc;
 use revm::{db::State, handler::register::EvmHandler};
 
 /// A type alias for the [revm::handler::register::HandleRegister] for kona's block executor.
@@ -49,7 +49,14 @@ where
 {
     /// Instantiate a new builder with the given [RollupConfig].
     pub fn new(config: &'a RollupConfig, provider: F, hinter: H) -> Self {
-        Self { config, provider, hinter, parent_header: None, evm_config: None, handler_register: None }
+        Self {
+            config,
+            provider,
+            hinter,
+            parent_header: None,
+            evm_config: None,
+            handler_register: None,
+        }
     }
 
     /// Set the [Header] to begin execution from.
@@ -86,7 +93,7 @@ where
         // ZTODO: error handling
         let evm_config = match self.evm_config.unwrap() {
             EvmConfigOrChainSpec::EvmConfig(config) => config,
-            EvmConfigOrChainSpec::ChainSpec(chain_spec) => C::new(chain_spec)
+            EvmConfigOrChainSpec::ChainSpec(chain_spec) => C::new(chain_spec),
         };
 
         let trie_db =
